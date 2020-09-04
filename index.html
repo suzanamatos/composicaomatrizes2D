@@ -1,0 +1,60 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Matrizes de transformação</title>
+  <link href="layout.css" rel="stylesheet">
+  <script src="mathfunctions.js"></script>
+
+  <style>
+    canvas {
+      border: 2px solid #343434;
+    }
+
+    article {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .playable-buttons {
+      margin-left: auto;
+    }
+
+    .playable-code {
+      float: right;
+      width: 390px;
+      min-height: 400px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Learn about this code on MDN: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale -->
+
+  <article>
+    <header>
+      <center><h1>Composição de Matrizes de Transformação</h1></center>
+    </header>
+    <canvas id="canvas" width="500" height="400" class="playable-canvas" onclick="setArrow(event)"></canvas>
+    <textarea id="code" class="playable-code">
+T = [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1]
+];
+apply(T);
+  </textarea>
+
+    <!--setSizePoints(10); //numeros de pontos para construção da curva
+p0 = [-250,-100];
+p1 = [-50,140];
+p2 = [100,-150];
+p3 = [300,125];
+setBezier(p0,p1,p2,p3);
+showPoints();-->
+
+    <script src="script.js"></script>
+  </article>
+</body>
+
+</html>
