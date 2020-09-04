@@ -193,7 +193,7 @@ Shape.prototype.draw = function () {
         points.push(p3);
         points.push(p4);
     
-        ctx.strokeStyle = "#851e52";
+        ctx.strokeStyle = "#dd2c00";
         ctx.beginPath(); //tell canvas to start a set of lines
 
         for (var i=0; i<points.length-1; i++) {
@@ -212,7 +212,7 @@ Shape.prototype.draw = function () {
         ctx.closePath(); //close the end to the start point
         ctx.stroke(); //actually draw the accumulated lines
         if(!colorintersection){
-            ctx.fillStyle = "#f7d3ba";
+            ctx.fillStyle = "#febf63";
         }
         ctx.fill();
         
