@@ -125,6 +125,23 @@ function rotateMatrixZ(theta){
     ]; //retorna matriz 4x4
 }
 
+function rotateAxisMatrix(axis,angle){
+    var theta = (angle*Math.PI)/180.;
+    x = axis[0];
+    y = axis[1];
+    z = axis[2];
+    var mod = Math.sqrt(x*x+y*y+z*z);
+    x = x/mod;
+    y = y/mod;
+    z = z/mod;
+    return [
+        [(1-Math.cos(theta))*x*x+Math.cos(theta),(1-Math.cos(theta))*x*y-Math.sin(theta)*z,(1-Math.cos(theta))*x*z+Math.sin(theta)*y,0],
+        [(1-Math.cos(theta))*x*y+Math.sin(theta)*z,(1-Math.cos(theta))*y*y+Math.cos(theta),(1-Math.cos(theta))*y*z-Math.sin(theta)*x,0],
+        [(1-Math.cos(theta))*x*z-Math.sin(theta)*y,(1-Math.cos(theta))*y*z+Math.sin(theta)*x,(1-Math.cos(theta))*z*z+Math.cos(theta),0],
+        [0,0,0,1],
+    ];
+}
+
 function rotateMatrixZI(theta){
     return transpose(rotateMatrixZ(theta));
 }

@@ -11,6 +11,7 @@ var p = null; //ponto de click
 M = transformCanvas(canvas.width, canvas.height);
 M2 = transformToSystem(canvas.width, canvas.height);
 TC = identity();
+var show_points = false;
 var colorintersection = false;
 
 var hit = null;
@@ -146,6 +147,10 @@ Shape.prototype.testIntersection = function () {
     }
 
 }
+Number.prototype.round = function(p) {
+    p = p || 10;
+    return parseFloat( this.toFixed(p) );
+  };
 
 Shape.prototype.draw = function () {
     var T = translateMatrix(this.translate.x,this.translate.y,this.translate.z); //TODO: modificar para receber a matriz de escala
@@ -196,10 +201,14 @@ Shape.prototype.draw = function () {
         ctx.strokeStyle = "#dd2c00";
         ctx.beginPath(); //tell canvas to start a set of lines
 
-        for (var i=0; i<points.length-1; i++) {
+        for (var i=0; i<points.length; i++) {
             //ponto da borda do círculo
             //tranformando os vértices
             var vertex = multVec(multMatrix(TC,C),points[i]);
+            if(show_points){
+                ctx.fillStyle = "#1b262c";
+                ctx.fillText("p"+i+": ("+vertex.x.round(2)+","+vertex.y.round(2)+","+vertex.z.round(2)+")", 10, canvas.height-40+i*10);
+            }
             //transformando para coordenadas do canvas
             vertex = multVec(M,[vertex.x, vertex.y,vertex.z, 1])
             ctx.lineTo(vertex.x, vertex.y);
@@ -207,13 +216,19 @@ Shape.prototype.draw = function () {
             //transformando para coordenadas do canvas
             vertex = multVec(M,[vertex.x, vertex.y,vertex.z, 1])
             ctx.lineTo(vertex.x, vertex.y);
-            console.log('x: '+vertex.x+', y: '+ vertex.y);
+            
+            
         }
         ctx.closePath(); //close the end to the start point
         ctx.stroke(); //actually draw the accumulated lines
-        if(!colorintersection){
+        var vertex = multVec(multMatrix(TC,C),points[0]);
+        if(vertex.z>=0){
             ctx.fillStyle = "#febf63";
+        }else{
+            ctx.fillStyle = "#ffc7c7";
         }
+        
+        
         ctx.fill();
         
     }
@@ -249,7 +264,6 @@ function setArrow(event) {
         ctx.fillText("Não interceptou!", canvas.width-100, canvas.height-20); //x e y definem a posição do canvas    
     }
     
-
 }
 
 function verifyIntersection(point,shape){
@@ -280,10 +294,71 @@ function verifyIntersection(point,shape){
     return false;
 }
 
-textarea.addEventListener("input", drawCanvas);
-window.addEventListener("load", drawCanvas);
 
+function Line(x1,y1,x2,y2){
+    this.x1=x1;
+    this.y1=y1;
+    this.x2=x2;
+    this.y2=y2;
+}
+Line.prototype.drawWithArrowheads=function(ctx){
+
+    // arbitrary styling
+    ctx.strokeStyle="blue";
+    ctx.fillStyle="blue";
+    ctx.lineWidth=1;
+
+    // draw the line
+    ctx.beginPath();
+    ctx.moveTo(this.x1,this.y1);
+    ctx.lineTo(this.x2,this.y2);
+    ctx.stroke();
+
+    // draw the starting arrowhead
+    //var startRadians=Math.atan((this.y2-this.y1)/(this.x2-this.x1));
+    //startRadians+=((this.x2>this.x1)?-90:90)*Math.PI/180;
+    //this.drawArrowhead(ctx,this.x1,this.y1,startRadians);
+    // draw the ending arrowhead
+    var endRadians=Math.atan((this.y2-this.y1)/(this.x2-this.x1));
+    endRadians+=((this.x2>this.x1)?90:-90)*Math.PI/180;
+    this.drawArrowhead(ctx,this.x2,this.y2,endRadians);
+
+
+}
+Line.prototype.drawArrowhead=function(ctx,x,y,radians){
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(x,y);
+    ctx.rotate(radians);
+    ctx.moveTo(0,0);
+    ctx.lineTo(3,10);
+    ctx.lineTo(-3,10);
+    ctx.closePath();
+    ctx.restore();
+    ctx.fill();
+}
+
+var angle_auto = 0;
+function rotateArrow(p,angle=0,auto=false){
+    var v1 = multVec(M,[0, 0,0, 1]);
+    var v2 = multVec(M,[p[0],p[1], p[2], 1]);
+    var line=new Line(v1.x,v1.y,v2.x,v2.y);
+    // draw the line
+    line.drawWithArrowheads(ctx);
+    if(!auto){
+        apply(rotateAxisMatrix(p,angle));
+    }else{
+        apply(rotateAxisMatrix(p,angle_auto));
+        angle_auto=angle_auto+1;        
+    }
+    
+}
+
+
+var fps = 60;
 function drawCanvas() {
+    setTimeout(function() {
+        requestAnimationFrame(drawCanvas);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     drawAxis();
@@ -295,13 +370,18 @@ function drawCanvas() {
     eval(textarea.value);
     object1.draw();
 
-    if(hit!=null){
+    // create a new line object
+    
+    /*if(hit!=null){
         phit = new Shape();
         phit.setTranslate(hit.x,hit.y,hit.z);
         ctx.fillStyle = "#005792";
         phit.setScale(3,3);
         phit.draw();
-    }
+    }*/
+    
+    }, 1000 / fps);
 }
 
-setInterval(drawCanvas(), 3000);
+textarea.addEventListener("input", drawCanvas);
+window.addEventListener("load", drawCanvas);
