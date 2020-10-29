@@ -1,0 +1,94 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Utilizando Shaders</title>
+  <link href="layout.css" rel="stylesheet">
+  <script src="mathfunctions.js"></script>
+
+  <style>
+    canvas {
+      border: 2px solid #343434;
+    }
+
+    article {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .playable-buttons {
+      margin-left: auto;
+    }
+
+    .playable-code {
+      float: right;
+      width: 100%;
+      min-height: 400px;
+    }
+  </style>
+</head>
+
+<body onload="InitDemo();">
+  <!-- Learn about this code on MDN: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale -->
+
+  <article>
+    <header>
+      <center><h1>Criando um Quadrado </h1></center>
+    </header>
+    <canvas id="canvas" width="500" height="400" class="playable-canvas" onclick="setArrow(event)"></canvas>
+    <textarea id="code" width="100%" class="playable-code">
+var triangleVertices = 
+[ // X, Y,       R, G, B
+	0.0, 0.5,    1.0, 0.0, 0.0,
+	-0.5, -0.5,  0.0, 1.0, 0.0,
+	0.5, -0.5,   0.0, 0.0, 1.0
+];
+
+var triangleVertexBufferObject = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBufferObject);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
+	
+
+
+var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+var colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
+gl.vertexAttribPointer(
+	positionAttribLocation, // localização do atributo
+	2, // numero de elementos por atributo
+	gl.FLOAT, // Tipo de elemento
+	gl.FALSE, //Normalização
+	5 * Float32Array.BYTES_PER_ELEMENT, // Tamanho do vertice individual
+	0 // Offset para iniciar a capturar os valores
+);
+gl.vertexAttribPointer(
+	colorAttribLocation, // Attribute location
+	3, // Number of elements per attribute
+	gl.FLOAT, // Type of elements
+	gl.FALSE,
+	5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+	2 * Float32Array.BYTES_PER_ELEMENT // Offset from the beginning of a single vertex to this attribute
+);
+
+gl.enableVertexAttribArray(positionAttribLocation);
+gl.enableVertexAttribArray(colorAttribLocation);
+
+	
+gl.useProgram(program);
+
+gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  </textarea>
+
+    <!--setSizePoints(10); //numeros de pontos para construção da curva
+p0 = [-250,-100];
+p1 = [-50,140];
+p2 = [100,-150];
+p3 = [300,125];
+setBezier(p0,p1,p2,p3);
+showPoints();-->
+
+    <script src="script-shader.js"></script>
+  </article>
+</body>
+
+</html>
