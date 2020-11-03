@@ -1,0 +1,75 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Utilizando Shaders</title>
+  <link href="layout.css" rel="stylesheet">
+  <script src="mathfunctions.js"></script>
+
+  <style>
+    canvas {
+      border: 2px solid #343434;
+    }
+
+    article {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .playable-buttons {
+      margin-left: auto;
+    }
+
+    .playable-code {
+      float: right;
+      width: 100%;
+      min-height: 800px;
+    }
+  </style>
+</head>
+
+<body onload="InitDemo();">
+  <!-- Learn about this code on MDN: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/scale -->
+
+  <article>
+    <header>
+      <center><h1>Aplicação de Transformações</h1></center>
+    </header>
+    <canvas id="canvas" width="500" height="400" class="playable-canvas" onclick="setArrow(event)"></canvas>
+    <textarea id="code" width="100%" height="100%" class="playable-code">
+//definição da matriz gluLookat
+mat4.lookAt(viewMatrix,[0,0,-3],[0,0,0],[0,1,0]);
+//definição da matriz gluPerspective
+mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(60),canvas.width/canvas.height,0.1,1000);
+
+var identityMatrix = new Float32Array(16);
+var xyRotationMatrix = new Float32Array(16);
+mat4.identity(identityMatrix);
+
+var mScale = new Float32Array(16); 
+mat4.scale(mScale,identityMatrix,[1.0,1.0,1.0]);
+
+var mTranslate = new Float32Array(16); 
+mat4.translate(mTranslate,identityMatrix,[0,0,0]);
+
+angle = 2 * Math.PI /3;
+mat4.rotate(xyRotationMatrix, identityMatrix, angle, [1, 1, 0]);
+mat4.mul(worldMatrix, identityMatrix,xyRotationMatrix);
+mat4.mul(worldMatrix, worldMatrix, mScale);
+mat4.mul(worldMatrix, mTranslate, worldMatrix);
+
+  </textarea>
+
+    <!--setSizePoints(10); //numeros de pontos para construção da curva
+p0 = [-250,-100];
+p1 = [-50,140];
+p2 = [100,-150];
+p3 = [300,125];
+setBezier(p0,p1,p2,p3);
+showPoints();-->
+<script src="gl-matrix.js"></script>
+    <script src="script-shader-cube.js"></script>
+  </article>
+</body>
+
+</html>
