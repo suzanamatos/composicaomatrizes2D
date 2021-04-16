@@ -5,22 +5,247 @@ var code = textarea.value;
 //definindo tipo de geometria
 const circle = 0;
 const box = 1;
+const butterfly = 2;
 
-var p = null; //ponto de click
 //matriz de transformação de canvas para sistema de coordenadas usual
 M = transformCanvas(canvas.width, canvas.height);
 M2 = transformToSystem(canvas.width, canvas.height);
-TC = identity();
-var show_points = false;
-var colorintersection = false;
+var show_points = true;
+var object;
 
-var hit = null;
+var pointsData = []
+
+var boxData = [
+    {"x":0.2,
+     "y":0.2},
+    {"x":0.2,
+     "y":-0.2},
+    {"x":-0.2,
+     "y":-0.2},
+    {"x":-0.2,
+     "y":0.2}]
+     
+var butterflyData = [
+    {"x":0.4489,
+     "y":0.50301},
+    {"x":0.40882,
+     "y":0.52505},
+    {"x":0.36673,
+     "y":0.53908},
+    {"x":0.32265,
+     "y":0.54309},
+    {"x":0.28858,
+     "y":0.55711},
+    {"x":0.33267,
+     "y":0.55511},
+    {"x":0.37876,
+     "y":0.54509},
+    {"x":0.42485,
+     "y":0.53106},
+    {"x":0.45892,
+     "y":0.53908},
+    {"x":0.43287,
+     "y":0.58116},
+    {"x":0.41483,
+     "y":0.62325},
+    {"x":0.3988,
+     "y":0.66934},
+    {"x":0.41683,
+     "y":0.6513},
+    {"x":0.43086,
+     "y":0.60521},
+    {"x":0.45291,
+     "y":0.56112},
+    {"x":0.48096,
+     "y":0.52906},
+    {"x":0.51503,
+     "y":0.52305},
+    {"x":0.51303,
+     "y":0.56914},
+    {"x":0.51503,
+     "y":0.61122},
+    {"x":0.51503,
+     "y":0.65731},
+    {"x":0.51703,
+     "y":0.70341},
+    {"x":0.52705,
+     "y":0.74749},
+    {"x":0.53707,
+     "y":0.79359},
+    {"x":0.55311,
+     "y":0.83968},
+    {"x":0.57315,
+     "y":0.88176},
+    {"x":0.59319,
+     "y":0.92385},
+    {"x":0.62525,
+     "y":0.96393},
+    {"x":0.67134,
+     "y":1},
+    {"x":0.71343,
+     "y":0.98597},
+    {"x":0.73547,
+     "y":0.93988},
+    {"x":0.74349,
+     "y":0.89379},
+    {"x":0.7515,
+     "y":0.8477},
+    {"x":0.76553,
+     "y":0.8016},
+    {"x":0.78357,
+     "y":0.75952},
+    {"x":0.81162,
+     "y":0.71944},
+    {"x":0.83367,
+     "y":0.67936},
+    {"x":0.82966,
+     "y":0.63327},
+    {"x":0.83567,
+     "y":0.6012},
+    {"x":0.87776,
+     "y":0.58918},
+    {"x":0.8978,
+     "y":0.55711},
+    {"x":0.90982,
+     "y":0.51904},
+    {"x":0.91383,
+     "y":0.48096},
+    {"x":0.92385,
+     "y":0.43888},
+    {"x":0.91784,
+     "y":0.4008},
+    {"x":0.96393,
+     "y":0.38076},
+    {"x":0.97595,
+     "y":0.35471},
+    {"x":0.93186,
+     "y":0.37475},
+    {"x":0.8998,
+     "y":0.35671},
+    {"x":0.88778,
+     "y":0.31463},
+    {"x":0.92986,
+     "y":0.28657},
+    {"x":0.97595,
+     "y":0.26854},
+    {"x":0.9479,
+     "y":0.25852},
+    {"x":0.9018,
+     "y":0.28257},
+    {"x":0.85772,
+     "y":0.28257},
+    {"x":0.81363,
+     "y":0.26453},
+    {"x":0.76754,
+     "y":0.26854},
+    {"x":0.72946,
+     "y":0.28858},
+    {"x":0.68938,
+     "y":0.31663},
+    {"x":0.67335,
+     "y":0.30261},
+    {"x":0.70942,
+     "y":0.26052},
+    {"x":0.73146,
+     "y":0.21844},
+    {"x":0.73547,
+     "y":0.17234},
+    {"x":0.72144,
+     "y":0.12625},
+    {"x":0.74148,
+     "y":0.08016},
+    {"x":0.77154,
+     "y":0.038076},
+    {"x":0.74549,
+     "y":0.038076},
+    {"x":0.71944,
+     "y":0.082164},
+    {"x":0.67535,
+     "y":0.10421},
+    {"x":0.63727,
+     "y":0.084168},
+    {"x":0.64529,
+     "y":0.04008},
+    {"x":0.65331,
+     "y":0},
+    {"x":0.62325,
+     "y":0.042084},
+    {"x":0.58116,
+     "y":0.064128},
+    {"x":0.54709,
+     "y":0.058116},
+    {"x":0.50501,
+     "y":0.054108},
+    {"x":0.46493,
+     "y":0.068136},
+    {"x":0.42285,
+     "y":0.084168},
+    {"x":0.40281,
+     "y":0.11222},
+    {"x":0.40681,
+     "y":0.13427},
+    {"x":0.38277,
+     "y":0.14629},
+    {"x":0.33868,
+     "y":0.13427},
+    {"x":0.29659,
+     "y":0.1483},
+    {"x":0.25651,
+     "y":0.16834},
+    {"x":0.21443,
+     "y":0.19038},
+    {"x":0.16834,
+     "y":0.2004},
+    {"x":0.12224,
+     "y":0.20641},
+    {"x":0.076152,
+     "y":0.21042},
+    {"x":0.03006,
+     "y":0.22445},
+    {"x":0,
+     "y":0.25451},
+    {"x":0.006012,
+     "y":0.29659},
+    {"x":0.04008,
+     "y":0.33667},
+    {"x":0.078156,
+     "y":0.36874},
+    {"x":0.11824,
+     "y":0.39479},
+    {"x":0.16433,
+     "y":0.41283},
+    {"x":0.20842,
+     "y":0.42886},
+    {"x":0.25251,
+     "y":0.44289},
+    {"x":0.29659,
+     "y":0.4489},
+    {"x":0.34269,
+     "y":0.45691},
+    {"x":0.38878,
+     "y":0.45892},
+    {"x":0.43487,
+     "y":0.46092},
+    {"x":0.45892,
+     "y":0.47695},
+    {"x":0.4489,
+     "y":0.50301}]
 
 
 
+function addData(data, points) {
+	for (var i = 0; i < data.length; i++) {
+		points.push([data[i].x*100,data[i].y*100,0,1]);
+	}
+}
+
+
+function changeObject(geo){
+	object.geometry = geo;
+}
 
 function apply(m){
-    //console.log(M.length);
+    //console.log(m.length);
     if(m.length == 3){
         m[0].push(0);
         m[0][3] = m[0][2];
@@ -31,7 +256,15 @@ function apply(m){
         m[2].push(0);
         m.push([0,0,0,1]);
     }
-    //console.log(M.length);
+    else if(m.length == 2){
+        m[0].push(0);
+        m[0].push(0);
+        m[1].push(0);
+        m[1].push(0);
+        m.push([0,0,1,0]);
+        m.push([0,0,0,1]);
+    }
+    //console.log(m);
     TC = multMatrix(m,TC);
 }
 
@@ -66,105 +299,30 @@ function drawAxis() {
 
 
 
-
-
 function Shape() {
     this.geometry = circle;
     this.name = "";
-    this.translate = new Vec3(0,0,0);
-    this.scale = new Vec3(0,0,0);
-    this.rotate = new Vec3(0,0,0);
 }
 
 function Shape(name) {
     this.geometry = circle;
     this.name = name;
-    this.translate = new Vec3(0,0,0);
-    this.scale = new Vec3(0,0,0);
-    this.rotate = new Vec3(0,0,0);
 }
 
-Shape.prototype.setScale = function (x = 0, y = 0, z = 0) {
-    this.scale = new Vec3(x, y, z);
-}
 
-Shape.prototype.setTranslate = function (x = 0, y = 0, z = 0) {
-    this.translate = new Vec3(x, y, z);
-}
-
-Shape.prototype.setRotateX = function (angle) {
-    this.rotate.x = angle; 
-}
-
-Shape.prototype.setRotateY = function (angle) {
-    this.rotate.y = angle; 
-}
-
-Shape.prototype.setRotateZ = function (angle) {
-    this.rotate.z = angle; 
-}
-
-Shape.prototype.testIntersection = function () {
-    var Ti = translateMatrixI(this.translate.x,this.translate.y,this.translate.z); //TODO: modificar para receber a matriz de escala
-    //console.log(this.rotate.z);
-    var Ri = multMatrix(rotateMatrixXI(this.rotate.x),multMatrix(rotateMatrixYI(this.rotate.y),rotateMatrixZI(this.rotate.z))); //TODO: modificar para receber a matriz de rotação
-    var Si = scaleMatrixI(this.scale.x, this.scale.y, this.scale.z);
-    var Ci = multMatrix(Si, multMatrix(Ri, Ti));
-
-    var pl = multVec(Ci,[p.x,p.y,0,1]);
-    if(pl.x*pl.x+pl.y*pl.y<=1){
-        console.log("interceptou!");
-    }else{
-        console.log("não interceptou!");
-    }
-
-    //verifica se a geometria é um círculo
-    if (this.geometry == circle) {
-        var step = 0.1;
-        var x0 = 0; //x inicial
-        var h0 = 0; //y inicial
-        var r = 1; //raio inicial
-
-        ctx.strokeStyle = "#851e52";
-        ctx.beginPath(); //tell canvas to start a set of lines
-
-        for (var theta = 0; theta < 2 * Math.PI; theta += step) {
-            //ponto da borda do círculo
-            var x = x0 + r * Math.cos(theta);
-            var y = h0 - r * Math.sin(theta);
-            //tranformando os vértices
-            var vertex = multVec(C,[x,y,0,1]);
-            //transformando para coordenadas do canvas
-            vertex = multVec(M,[vertex.x, vertex.y,vertex.z, 1])
-            ctx.lineTo(vertex.x, vertex.y);
-        }
-        ctx.closePath(); //close the end to the start point
-        ctx.stroke(); //actually draw the accumulated lines
-        if(!colorintersection){
-            ctx.fillStyle = "#f7d3ba";
-        }
-        ctx.fill();
-    }
-
-}
 Number.prototype.round = function(p) {
     p = p || 10;
     return parseFloat( this.toFixed(p) );
-  };
+};
 
 Shape.prototype.draw = function () {
-    var T = translateMatrix(this.translate.x,this.translate.y,this.translate.z); //TODO: modificar para receber a matriz de escala
-    //console.log(this.rotate.z);
-    var R = multMatrix(rotateMatrixX(this.rotate.x),multMatrix(rotateMatrixY(this.rotate.y),rotateMatrixZ(this.rotate.z))); //TODO: modificar para receber a matriz de rotação
-    var S = scaleMatrix(this.scale.x, this.scale.y, this.scale.z);
-    var C = multMatrix(T, multMatrix(R, S));
 
     //verifica se a geometria é um círculo
     if (this.geometry == circle) {
         var step = 0.1;
         var x0 = 0; //x inicial
         var h0 = 0; //y inicial
-        var r = 1; //raio inicial
+        var r = 15; //raio inicial
 
         ctx.strokeStyle = "#851e52";
         ctx.beginPath(); //tell canvas to start a set of lines
@@ -174,183 +332,59 @@ Shape.prototype.draw = function () {
             var x = x0 + r * Math.cos(theta);
             var y = h0 - r * Math.sin(theta);
             //tranformando os vértices
-            var vertex = multVec(C,[x,y,0,1]);
+            var vertex = multVec(TC,[x,y,0,1]);
             //transformando para coordenadas do canvas
             vertex = multVec(M,[vertex.x, vertex.y,vertex.z, 1])
             ctx.lineTo(vertex.x, vertex.y);
         }
         ctx.closePath(); //close the end to the start point
         ctx.stroke(); //actually draw the accumulated lines
-        if(!colorintersection){
-            ctx.fillStyle = "#f7d3ba";
-        }
         ctx.fill();
     }
-
-    if (this.geometry == box) {
-        var p1 = [0.5,0.5,0,1];
-        var p2 = [0.5,-0.5,0,1];
-        var p3 = [-0.5,-0.5,0,1];
-        var p4 = [-0.5,0.5,0,1];
+    else
+    {
         points = []
-        points.push(p1);
-        points.push(p2);
-        points.push(p3);
-        points.push(p4);
-    
-        ctx.strokeStyle = "#dd2c00";
-        ctx.beginPath(); //tell canvas to start a set of lines
+	    if (this.geometry == box) {
+	    	show_points = true;
+    		addData(boxData, points);
+    	}else if (this.geometry == butterfly) {
+    		show_points = false;
+			addData(butterflyData, points);
+		}
 
-        for (var i=0; i<points.length; i++) {
-            //ponto da borda do círculo
-            //tranformando os vértices
-            var vertex = multVec(multMatrix(TC,C),points[i]);
+		ctx.strokeStyle = "#dd2c00";
+		ctx.beginPath(); //tell canvas to start a set of lines
+
+		for (var i=0; i<points.length; i++) 
+		{
+		    //tranformando os vértices
+		    var vertex = multVec(TC,points[i]);
             if(show_points){
                 ctx.fillStyle = "#1b262c";
-                ctx.fillText("p"+i+": ("+vertex.x.round(2)+","+vertex.y.round(2)+","+vertex.z.round(2)+")", 10, canvas.height-40+i*10);
+                ctx.fillText("p"+i+": ("+vertex.x.round(2)+","+vertex.y.round(2)+")", 10, canvas.height-40+i*10);
             }
-            //transformando para coordenadas do canvas
-            vertex = multVec(M,[vertex.x, vertex.y,vertex.z, 1])
-            ctx.lineTo(vertex.x, vertex.y);
-            vertex = multVec(multMatrix(TC,C),points[(i+1)%points.length]);
-            //transformando para coordenadas do canvas
-            vertex = multVec(M,[vertex.x, vertex.y,vertex.z, 1])
-            ctx.lineTo(vertex.x, vertex.y);
-            
-            
-        }
-        ctx.closePath(); //close the end to the start point
-        ctx.stroke(); //actually draw the accumulated lines
-        var vertex = multVec(multMatrix(TC,C),points[0]);
-        if(vertex.z>=0){
-            ctx.fillStyle = "#febf63";
-        }else{
-            ctx.fillStyle = "#ffc7c7";
-        }
-        
-        
-        ctx.fill();
-        
-    }
-
-}
-testshape = new Shape();
-//chame por este evento no onclick do canvas
-function setArrow(event) {
-    var x = event.offsetX;
-    var y = event.offsetY;
-    guessX = x;
-    guessY = y;
-    p = multVec(M2,[x,y,0,1]);
-    console.log("x coords: " + guessX + ", y coords: " + guessY);
-    //transformar para sistema de coordenadas global
-    var T = transformToSystem(canvas.width,canvas.height);
-    var vertex = multVec(T,[x,y,0,1]);
-    console.log("sis x coords: " + vertex.x + ", sis y coords: " + vertex.y);
-    verifyIntersection(vertex,testshape);
-    if(colorintersection){
-        ctx.fillStyle = "#be3737";
-    }else{
-        ctx.fillStyle = "#f7d3ba";
-    }
-    drawCanvas();
-    if(colorintersection){
-        ctx.fillStyle = "#494949"; //cor do texto
-        ctx.fillText("Interceptou!", canvas.width-100, canvas.height-20); //x e y definem a posição do canvas
-        console.log("Ponto interceptou!");
-    }else{
-        console.log("Ponto não interceptou!"); 
-        ctx.fillStyle = "#494949"; //cor do texto
-        ctx.fillText("Não interceptou!", canvas.width-100, canvas.height-20); //x e y definem a posição do canvas    
+		    //transformando para coordenadas do canvas
+		    vertex = multVec(M, [vertex.x, vertex.y, vertex.z, 1])
+		    ctx.lineTo(vertex.x, vertex.y);
+		    vertex = multVec(TC,points[(i+1)%points.length]);
+		    //transformando para coordenadas do canvas
+		    vertex = multVec(M, [vertex.x, vertex.y,vertex.z, 1])
+		    ctx.lineTo(vertex.x, vertex.y);
+		}
+		ctx.closePath(); //close the end to the start point
+		ctx.stroke(); //actually draw the accumulated lines
+		var vertex = multVec(TC,points[0]);
+		
+		if(vertex.z>=0){
+		    ctx.fillStyle = "#febf63";
+		}else{
+		    ctx.fillStyle = "#ffc7c7";
+		}
+		
+		
+		ctx.fill();    
     }
     
-}
-
-function verifyIntersection(point,shape){
-    var T = translateMatrix(shape.translate.x,shape.translate.y,shape.translate.z); //TODO: modificar para receber a matriz de escala
-    //console.log(this.rotate.z);
-    var R = multMatrix(rotateMatrixX(shape.rotate.x),multMatrix(rotateMatrixY(shape.rotate.y),rotateMatrixZ(shape.rotate.z))); //TODO: modificar para receber a matriz de rotação
-    var S = scaleMatrix(shape.scale.x, shape.scale.y, 0);
-    var C = multMatrix(T, multMatrix(R, S));
-    //console.log(shape);
-    //transformar ponto em coordenada local
-    var Ti = translateMatrixI(shape.translate.x,shape.translate.y,shape.translate.z); //TODO: modificar para receber a matriz de escala
-    //console.log(this.rotate.z);
-    //var R = multMatrix(rotateMatrixX(shape.rotate.x),multMatrix(rotateMatrixY(shape.rotate.y),rotateMatrixZ(shape.rotate.z))); //TODO: modificar para receber a matriz de rotação
-    //var Ri = transpose(R);
-    var Ri = multMatrix(rotateMatrixZI(shape.rotate.z),multMatrix(rotateMatrixYI(shape.rotate.y),rotateMatrixXI(shape.rotate.x))); //TODO: modificar para receber a matriz de rotação
-    var Si = scaleMatrixI(shape.scale.x, shape.scale.y, 0.0);
-    var Ci = multMatrix(Si, multMatrix(Ri, Ti)); 
-    //console.log(Ci);
-    var p = multVec(Ci,[point.x,point.y,point.z,1]);
-    
-    hit = multVec(C,[p.x,p.y,p.z,1]);
-
-    if(p.x*p.x+p.y*p.y<=1.0){
-        colorintersection = true;
-        return true;
-    }
-    colorintersection = false;
-    return false;
-}
-
-
-function Line(x1,y1,x2,y2){
-    this.x1=x1;
-    this.y1=y1;
-    this.x2=x2;
-    this.y2=y2;
-}
-Line.prototype.drawWithArrowheads=function(ctx){
-
-    // arbitrary styling
-    ctx.strokeStyle="blue";
-    ctx.fillStyle="blue";
-    ctx.lineWidth=1;
-
-    // draw the line
-    ctx.beginPath();
-    ctx.moveTo(this.x1,this.y1);
-    ctx.lineTo(this.x2,this.y2);
-    ctx.stroke();
-
-    // draw the starting arrowhead
-    //var startRadians=Math.atan((this.y2-this.y1)/(this.x2-this.x1));
-    //startRadians+=((this.x2>this.x1)?-90:90)*Math.PI/180;
-    //this.drawArrowhead(ctx,this.x1,this.y1,startRadians);
-    // draw the ending arrowhead
-    var endRadians=Math.atan((this.y2-this.y1)/(this.x2-this.x1));
-    endRadians+=((this.x2>this.x1)?90:-90)*Math.PI/180;
-    this.drawArrowhead(ctx,this.x2,this.y2,endRadians);
-
-
-}
-Line.prototype.drawArrowhead=function(ctx,x,y,radians){
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(x,y);
-    ctx.rotate(radians);
-    ctx.moveTo(0,0);
-    ctx.lineTo(3,10);
-    ctx.lineTo(-3,10);
-    ctx.closePath();
-    ctx.restore();
-    ctx.fill();
-}
-
-var angle_auto = 0;
-function rotateArrow(p,angle=0,auto=false){
-    var v1 = multVec(M,[0, 0,0, 1]);
-    var v2 = multVec(M,[p[0],p[1], p[2], 1]);
-    var line=new Line(v1.x,v1.y,v2.x,v2.y);
-    // draw the line
-    line.drawWithArrowheads(ctx);
-    if(!auto){
-        apply(rotateAxisMatrix(p,angle));
-    }else{
-        apply(rotateAxisMatrix(p,angle_auto));
-        angle_auto=angle_auto+1;        
-    }
     
 }
 
@@ -359,26 +393,16 @@ var fps = 60;
 function drawCanvas() {
     setTimeout(function() {
         requestAnimationFrame(drawCanvas);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    drawAxis();
-    var object1 = new Shape("Box");
-    object1.geometry = box;
-    object1.setScale(20,20);
-    
-    TC = identity();
-    eval(textarea.value);
-    object1.draw();
+	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	    ctx.setTransform(1, 0, 0, 1, 0, 0);
+	    drawAxis();
+	    object = new Shape("Object");
+	    object.geometry = box;
+	    
+	    TC = identity();
+	    eval(textarea.value);
+	    object.draw();
 
-    // create a new line object
-    
-    /*if(hit!=null){
-        phit = new Shape();
-        phit.setTranslate(hit.x,hit.y,hit.z);
-        ctx.fillStyle = "#005792";
-        phit.setScale(3,3);
-        phit.draw();
-    }*/
     
     }, 1000 / fps);
 }
